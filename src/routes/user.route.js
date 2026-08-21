@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { changeAvatar, changeCoverImage, changeUser_fullName, changeUserPassword, get_new_refreshed_token, getChannel_details_DB, getCurrentUserData_DB, loginUser, logoutUser, registerUser } from "../controllers/user.controller.js";
+import { changeAvatar, changeCoverImage, changeUser_fullName, changeUserPassword, get_new_refreshed_token, getCurrentUserData_DB, loginUser, logoutUser, registerUser } from "../controllers/user.controller.js";
 import { upload } from "../middlewares/multer.middleware.js";
 import { JWTverify } from "../middlewares/auth.middleware.js";
 
@@ -48,8 +48,7 @@ router.route("/change-avatar").post(JWTverify, upload.single('avatar'), changeAv
 // change user coverImage and injected auth middleware
 router.route("/change-coverImage").post(JWTverify, upload.single('coverImage'), changeCoverImage);
 
-// get channel details from database throw username and injected auth middleware
-router.route("/get-channel-details/:username").post(JWTverify, getChannel_details_DB);
+
 
 
 export default router;

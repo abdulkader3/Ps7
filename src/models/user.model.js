@@ -6,10 +6,10 @@ import bcrypt from "bcrypt";
 
 
 const userSchema = new Schema({
-    watchHistory : {
+    watchHistory : [{
         type : Schema.Types.ObjectId,
         ref : "Video"
-    },
+    }],
     userName : {
         type : String,
         required : true,

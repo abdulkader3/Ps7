@@ -4,6 +4,7 @@ import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { User } from "../models/user.model.js";
 import { uploadOnCloudinary, deleteFileOnCloudinary } from "../utils/cloudinary.js";
+import mongoose from "mongoose";
 
 
 
@@ -405,78 +406,6 @@ const changeCoverImage = asyncHandlers( async (req,res) => {
 
 // change userName securely one time every 7 days
 
-// get a channel details from database with Aggregation pipeline 
-const getChannel_details_DB = asyncHandlers( async (req,res) => {
-
-    // get channel username from params
-    const {username} = req.params;
-    if(!username){
-        throw new ApiError(401, "Channel's username is required")
-    }
-    const userName = username.toLowerCase();
-    // console.log("from params : ", userName); // only for development
-
-    const channel_details_DB = await User.aggregate([
-        {
-            $match : {userName}
-        },
-        {
-            $lookup : {
-                from : "subscriptions",
-                localField : "_id",
-                foreignField : "channel",
-                as : "channels_subscriber"
-            }
-        },
-        {
-            $lookup : {
-                from : "subscriptions",
-                localField : "_id",
-                foreignField : "subscriber",
-                as : "channels_user_subscribed_to"
-            }
-        },
-        {
-            $addFields : {
-                channels_subscriber_count : { $size : "$channels_subscriber" },
-                channels_user_subscribed_to_count : { $size : "$channels_user_subscribed_to" },
-
-                is_logged_in_user_subscribed : {
-                    $cond : {
-                        if : { $in : [req.user?._id, "$channels_subscriber.subscriber"] },
-                        then : true,
-                        else : false
-                    }
-                }
-            }
-        },
-        {
-            $project : {
-                userName   : 1,
-                fullName   : 1,
-                email      : 1,
-                avatar     : 1,
-                coverImage : 1,
-                channels_subscriber_count         : 1,
-                is_logged_in_user_subscribed      : 1,
-                channels_user_subscribed_to_count : 1
-            }
-        }
-    ])
-
-    if(!channel_details_DB.length){
-        throw new ApiError(404, "channel not found")
-    }
-
-    console.log(channel_details_DB && "channel Found 😍👍👍👍 ✅")  // development only
-
-
-    return res 
-    .status(200)
-    .json(
-        new ApiResponse(200, channel_details_DB[0], "Channel fetched successfully from database 😍👍")
-    )
-} )
 
 
 
@@ -497,6 +426,5 @@ export{
     changeUserPassword,
     changeUser_fullName,
     changeAvatar,
-    changeCoverImage,
-    getChannel_details_DB
+    changeCoverImage
 }

@@ -9,7 +9,7 @@ import { User } from "../models/user.model.js";
 const JWTverify = asyncHandlers( async (req,res,next) => {
     try {
         
-        const token = req.cookies?.refreshToken || req.header("Authorization").replace("Bearer ", "");
+        const token = req.cookies?.refreshToken || req.header("Authorization")?.replace("Bearer ", "");
 
         if(!token){
             throw new ApiError(401, "invalidate token or missing token");
@@ -36,4 +36,39 @@ const JWTverify = asyncHandlers( async (req,res,next) => {
 } )
 
 
-export{JWTverify};
+
+const JWTverifyOptional = asyncHandlers( async (req,res,next) => {
+    try {
+        
+        const token = req.cookies?.refreshToken || req.header("Authorization")?.replace("Bearer ", "");
+
+        if(!token){
+            req.user = null;
+            return next();
+        }
+
+        const decodeToken = await jwt.verify(token, process.env.REFRESH_TOKEN_SECRETE)
+        if(!decodeToken){
+            req.user = null;
+            return next();
+        };
+
+        console.log("decode refreshToken : ", decodeToken || "token invalidate"); // only for development
+
+        const userDB = await User.findById(decodeToken?._id).select("-password");
+        if(!userDB){
+            req.user = null;
+            return next();
+        }
+
+        req.user = userDB;
+        next();
+
+    } catch (error) {
+        req.user = null;
+        return next();
+    }
+} )
+
+
+export{JWTverify,JWTverifyOptional};

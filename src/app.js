@@ -22,10 +22,18 @@ app.use(cookieParser())
 
 // import router
 import userRouter from "./routes/user.route.js"
+import channelRouter from "./routes/channel.route.js";
+import videoRouter from "./routes/video.route.js";
 
 
 // route
 app.use("/api/v1/users", userRouter);
+
+//route channel
+app.use("/api/v1/channel", channelRouter);
+
+// route video
+app.use("/api/v1/videos", videoRouter);
 
 
 
