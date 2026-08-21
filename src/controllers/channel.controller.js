@@ -94,7 +94,7 @@ const user_watch_history_DB = asyncHandlers( async (req,res) => {
             $lookup : {
                 from : "videos",
                 localField : "watchHistory",
-                foreignField : "owner",
+                foreignField : "_id",
                 as : "watchHistory",
                 pipeline : [
                     {

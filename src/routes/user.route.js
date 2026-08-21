@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { changeAvatar, changeCoverImage, changeUser_fullName, changeUserPassword, get_new_refreshed_token, getCurrentUserData_DB, loginUser, logoutUser, registerUser } from "../controllers/user.controller.js";
+import { changeAvatar, changeCoverImage, changeUser_email, changeUser_fullName, changeUserPassword, get_new_refreshed_token, getCurrentUserData_DB, loginUser, logoutUser, registerUser } from "../controllers/user.controller.js";
 import { upload } from "../middlewares/multer.middleware.js";
 import { JWTverify } from "../middlewares/auth.middleware.js";
 
@@ -41,6 +41,9 @@ router.route("/change-password").post(JWTverify, changeUserPassword);
 
 // change user Full name and and injected auth middleware
 router.route("/change-fullName").post(JWTverify, changeUser_fullName);
+
+// change user Email and and injected auth middleware
+router.route("/change-email").post(JWTverify, changeUser_email);
 
 // change user Avatar and injected auth middleware
 router.route("/change-avatar").post(JWTverify, upload.single('avatar'), changeAvatar);

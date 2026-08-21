@@ -3,6 +3,7 @@ import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { User } from "../models/user.model.js";
 import { Video } from "../models/video.model.js";
+import { uploadOnCloudinary } from "../utils/cloudinary.js";
 
 
 
@@ -16,7 +17,54 @@ const upload_video = asyncHandlers( async (req,res) => {
 
     const {title, description} = req.body;
 
+    if( [title,description].some( (superman)=> superman.trim() === "" ) ){
+        throw new ApiError(400, "All fields are required")
+    }
+
     console.log(title && "we have title", description && "\nwe have description")
+
+    const videoFileLocalPath = req.files?.video[0]?.path;
+    if(!videoFileLocalPath){
+        throw new ApiError(400, 'video is required')
+    }
+    
+    const video = await uploadOnCloudinary(videoFileLocalPath);
+    if(!video){
+        throw new ApiError(500, "Failed to upload on Cloudinary")
+    }
+
+    const thumbnailLocalPath = req.files?.thumbnail[0]?.path;
+    if(!thumbnailLocalPath){
+        throw new ApiError(400 , "thumbnail is required")
+    }
+
+    const thumbnail = await uploadOnCloudinary(thumbnailLocalPath);
+    if(!thumbnail){
+        throw new ApiError(500, "Failed to upload in Cloudinary")
+    }
+
+    const videoEntry_DB = await Video.create({
+        title,
+        description,
+        videFile : video.url,
+        videFile_public_id : video.public_id,
+        thumbnail : thumbnail.url,
+        thumbnail_public_id : thumbnail.public_id,
+        owner : req.user._id,
+        duration : video.duration 
+    })
+
+    if(!videoEntry_DB){
+        throw new ApiError(500, "Sorry, we failed to create a database entry for your video upload.")
+    }
+
+    return res
+    .status(200)
+    .json(
+        new ApiResponse(200, videoEntry_DB, `${req.user.userName}'s video upload was successful 😍👍`)
+    )
+
+
 } )
 
 

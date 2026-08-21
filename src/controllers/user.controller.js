@@ -307,6 +307,38 @@ const changeUser_fullName = asyncHandlers( async (req,res) => {
 } )
 
 // change user email
+const changeUser_email = asyncHandlers( async (req,res) => {
+   // injected middleware //done
+   
+   // get user data 
+   const {emailNew} = req.body;
+   if(!emailNew){
+    throw new ApiError(401, "New email is required to change")
+   }
+
+   // update new fullName in database
+   const userDB = await User.findByIdAndUpdate(
+    req.user?._id,
+    {
+        $set : {email : emailNew}
+    },
+    {
+        returnDocument : "after"
+    }
+   ).select("-password -refreshToken");
+
+   if(!userDB){
+    throw new ApiError(500, "Sorry, we couldn't save your email to our database")
+   }
+
+   console.log(userDB && "it's Done !")
+
+   return res
+   .status(200)
+   .json(
+        new ApiResponse(200, userDB, "email updated successfully 😍👍")
+   )
+} )
 // same as fullname & i'll do it letter
 
 
@@ -426,5 +458,6 @@ export{
     changeUserPassword,
     changeUser_fullName,
     changeAvatar,
-    changeCoverImage
+    changeCoverImage,
+    changeUser_email
 }
