@@ -23,9 +23,17 @@ const upload_video = asyncHandlers( async (req,res) => {
 
     console.log(title && "we have title", description && "\nwe have description")
 
+    // local file
     const videoFileLocalPath = req.files?.video[0]?.path;
+    const thumbnailLocalPath = req.files?.thumbnail[0]?.path;
+    console.log(`${videoFileLocalPath}\n${thumbnailLocalPath}`)
+
+    // verify local file
     if(!videoFileLocalPath){
         throw new ApiError(400, 'video is required')
+    };
+    if(!thumbnailLocalPath){
+        throw new ApiError(400 , "thumbnail is required")
     }
     
     const video = await uploadOnCloudinary(videoFileLocalPath);
@@ -33,10 +41,6 @@ const upload_video = asyncHandlers( async (req,res) => {
         throw new ApiError(500, "Failed to upload on Cloudinary")
     }
 
-    const thumbnailLocalPath = req.files?.thumbnail[0]?.path;
-    if(!thumbnailLocalPath){
-        throw new ApiError(400 , "thumbnail is required")
-    }
 
     const thumbnail = await uploadOnCloudinary(thumbnailLocalPath);
     if(!thumbnail){
