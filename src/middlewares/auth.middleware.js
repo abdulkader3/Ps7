@@ -31,7 +31,7 @@ const JWTverify = asyncHandlers( async (req,res,next) => {
         next();
 
     } catch (error) {
-        throw new ApiError(401, " src > middleware > auth.middleware.js : token not validate")
+        throw new ApiError(401, "User is not logged in!\nsrc > middleware > auth.middleware.js : also token not validate")
     }
 } )
 
