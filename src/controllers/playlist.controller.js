@@ -9,7 +9,17 @@ import { Playlist } from "../models/playlist.model.js";
 
 
 const get_playlist = asyncHandlers(async (req,res) => {
-    
+   
+    // get playlist
+    const playlist = await Playlist.find({
+        owner : req.user?._id
+    })
+
+    return res
+    .status(200)
+    .json(
+        new ApiResponse(200, playlist, `${req.user?.userName}'s playlist fetched from database`)
+    )
 });
 
 
@@ -46,8 +56,51 @@ const create_playlist = asyncHandlers( async (req,res) => {
 } );
 
 
+// add video in playlist
+const add_video_in_playlist = asyncHandlers( async (req,res) => {
+    
+    // get playlist and video
+    const {playlist,video} = req.params;
+
+    if([playlist, video].some( (superman)=> superman.trim() === "" ) ){
+        throw new ApiError(400, "playlist and video both are required")
+    }
+
+
+    // find and update
+    const updatePlaylist_DB = await Playlist.findOneAndUpdate(
+        {
+            _id : playlist,
+            owner : req.user._id
+
+        },
+        {
+            $addToSet : {
+                videos : video
+            }
+        },
+        {
+            returnDocument : "after"
+        }
+    )
+
+    if(!updatePlaylist_DB){
+        throw new ApiError(404, "playlist not found")
+    }
+
+    return res
+    .status(200)
+    .json(
+        new ApiResponse(200, updatePlaylist_DB, "your video add to your playlist")
+    )
+
+
+} );
+
+
 
 export{
     get_playlist,
     create_playlist,
+    add_video_in_playlist,
 }
