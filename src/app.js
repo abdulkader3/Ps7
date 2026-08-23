@@ -24,6 +24,11 @@ app.use(cookieParser())
 import userRouter from "./routes/user.route.js"
 import channelRouter from "./routes/channel.route.js";
 import videoRouter from "./routes/video.route.js";
+import subscriptionRouter from "./routes/subscription.route.js";
+import playlistRouter from "./routes/playlist.route.js";
+
+
+
 
 
 // route
@@ -35,7 +40,11 @@ app.use("/api/v1/channel", channelRouter);
 // route video
 app.use("/api/v1/videos", videoRouter);
 
+// route subscription
+app.use("/api/v1/subscription", subscriptionRouter);
 
+// route playlist
+app.use("/api/v1/playlist", playlistRouter);
 
 
 export{app};
