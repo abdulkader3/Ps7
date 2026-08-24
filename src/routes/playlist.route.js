@@ -17,6 +17,10 @@ router.route("/create-playlist").post(JWTverify, create_playlist);
 
 router.route("/add-video-in-playlist/:playlist/:video").post(JWTverify, add_video_in_playlist);
 
+// delete a playlist
+
+// remove a video from a playlist
+
 
 
 
