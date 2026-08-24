@@ -73,10 +73,34 @@ const commentCreate = asyncHandlers( async (req,res) => {
 
 
 // now delete the comment
+const delete_a_comment = asyncHandlers( async (req,res) => {
+    
+    // user have to be logged in To determine whether that user is authorized to delete that specific comment 
+
+    const {comment} = req.params;
+    if(!comment || comment.trim() === ""){
+        throw new ApiError(400, "comment id is required" )
+    }
+
+    const commentDB = await Comment.findOneAndDelete(
+        {_id : comment, owner : req.user._id}
+    )
+
+    if(!commentDB){
+        throw new ApiError(404, "comment not found - maybe user is not authorize")
+    }
+
+    return res
+    .status(200)
+    .json(
+        new ApiResponse(200, {}, "comment is deleted successfully")
+    )
+} );
 
 
 
 export{
     commentCreate,
-    get_comment
+    get_comment,
+    delete_a_comment
 }
