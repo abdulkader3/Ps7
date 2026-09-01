@@ -5,6 +5,7 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { User } from "../models/user.model.js";
 import { uploadOnCloudinary, deleteFileOnCloudinary } from "../utils/cloudinary.js";
 import mongoose from "mongoose";
+import { emailValidator } from "../utils/helper/email.validator.js";
 
 
 
@@ -34,6 +35,11 @@ const registerUser = asyncHandlers( async (req,res) => {
     // get user data from frontend
     const {userName,fullName,email,password} = req.body;
 
+    if(!emailValidator(email)){
+        fs.unlinkSync(req.files?.avatar[0].path);
+        fs.unlinkSync(req.files?.coverImage[0].path);
+        throw new ApiError(400, "Invalid Email address")
+    }
     console.log(`username : ${userName} \n fullName : ${fullName} \n email : ${email} \n password : ${password && "*******"}`) // only for development
 
     // validate user data in case of error delete file [avatar,coverImage]
