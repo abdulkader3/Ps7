@@ -1,12 +1,16 @@
 import { Router } from "express";
 import { JWTverify, JWTverifyOptional } from "../middlewares/auth.middleware.js";
-import { playVideo, upload_video } from "../controllers/video.controller.js";
+import { getVideo, playVideo, upload_video } from "../controllers/video.controller.js";
 import { upload } from "../middlewares/multer.middleware.js";
 
 
 
 
 const router = Router();
+
+
+// get video 
+router.route("/").get(getVideo)
 
 
 

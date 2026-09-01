@@ -9,6 +9,21 @@ import { uploadOnCloudinary } from "../utils/cloudinary.js";
 
 
 
+
+// get video
+const getVideo = asyncHandlers( async (req,res) => {
+
+    const video_DB = await Video.find();
+
+
+    return res
+    .status(200)
+    .json(
+        new ApiResponse(200,video_DB,"all video for feed")
+    )
+} )
+
+
 // upload video
 const upload_video = asyncHandlers( async (req,res) => {
     
@@ -123,4 +138,5 @@ const playVideo = asyncHandlers( async (req,res) => {
 export{
     playVideo,
     upload_video,
+    getVideo
 }
